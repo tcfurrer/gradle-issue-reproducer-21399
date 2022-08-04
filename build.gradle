@@ -1,0 +1,20 @@
+plugins {
+    id 'base'
+}
+
+task allJavadoc(type: Javadoc) {
+    dependsOn subprojects.collect { project -> project.getTasksByName('classes', true)}
+    failOnError = true
+    title = "Aggregated Documentation"
+    source subprojects.collect {[it.sourceSets.main.java]}
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
+    options.encoding = 'UTF-8'
+    options.addStringOption('-module-source-path', './*/src/main/java/')
+    options.addBooleanOption('Xdoclint:-missing', true)
+    options.addBooleanOption('Werror', true)
+    options.addBooleanOption('html5', true)
+    options.addBooleanOption('use', true)
+}
+
+build.dependsOn allJavadoc
